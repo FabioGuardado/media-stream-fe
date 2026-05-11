@@ -1,24 +1,23 @@
-import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { useAuthStore } from '../../store/useAuthStore'
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuthStore } from '../../store/useAuthStore';
 
-const AUTH_PATHS = ['/login', '/register', '/admin/login']
+const AUTH_PATHS = ['/login', '/register', '/admin/login'];
 
 export default function Navbar() {
-  const { currentUser, logout, isAdmin } = useAuthStore()
-  const navigate = useNavigate()
-  const { pathname } = useLocation()
+  const { currentUser, logout, isAdmin } = useAuthStore();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const handleLogout = () => {
-    logout()
-    navigate('/login')
-  }
+    logout();
+    navigate('/login');
+  };
 
-  if (AUTH_PATHS.includes(pathname)) return null
+  if (AUTH_PATHS.includes(pathname)) return null;
 
   return (
     <header className="sticky top-0 z-50 glass border-b border-border">
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
         <Link
           to="/"
           className="font-display text-xl font-extrabold tracking-tight text-white hover:text-accent transition-colors"
@@ -26,13 +25,10 @@ export default function Navbar() {
           Media<span className="text-accent">Stream</span>
         </Link>
 
-        {/* Right side */}
         <div className="flex items-center gap-4">
           {currentUser ? (
             <>
-              <span className="text-sm text-muted hidden sm:block">
-                {currentUser.name}
-              </span>
+              <span className="text-sm text-muted hidden sm:block">{currentUser.name}</span>
 
               {isAdmin() && (
                 <Link
@@ -52,10 +48,7 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link
-                to="/login"
-                className="text-sm text-muted hover:text-white transition-colors"
-              >
+              <Link to="/login" className="text-sm text-muted hover:text-white transition-colors">
                 Iniciar sesión
               </Link>
               <Link
@@ -69,5 +62,5 @@ export default function Navbar() {
         </div>
       </nav>
     </header>
-  )
+  );
 }

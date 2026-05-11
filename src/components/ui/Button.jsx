@@ -1,20 +1,16 @@
-/**
- * Variants: 'primary' | 'secondary' | 'danger' | 'ghost' | 'amber'
- * Sizes:    'sm' | 'md' | 'lg'
- */
 const variants = {
-  primary:   'bg-accent hover:bg-accent-hover text-white',
+  primary: 'bg-accent hover:bg-accent-hover text-white',
   secondary: 'bg-card hover:bg-border text-white border border-border',
-  danger:    'bg-red-600 hover:bg-red-700 text-white',
-  ghost:     'text-muted hover:text-white hover:bg-card',
-  amber:     'bg-amber hover:bg-yellow-600 text-surface font-semibold',
-}
+  danger: 'bg-red-600 hover:bg-red-700 text-white',
+  ghost: 'text-muted hover:text-white hover:bg-card',
+  amber: 'bg-amber hover:bg-yellow-600 text-surface font-semibold',
+};
 
 const sizes = {
   sm: 'text-xs px-3 py-1.5',
   md: 'text-sm px-4 py-2',
   lg: 'text-base px-6 py-3',
-}
+};
 
 export default function Button({
   children,
@@ -39,5 +35,5 @@ export default function Button({
       )}
       {children}
     </button>
-  )
+  );
 }

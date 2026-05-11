@@ -1,82 +1,85 @@
-import { useState, useEffect } from 'react'
-import Modal from '../ui/Modal'
-import Input from '../ui/Input'
-import Button from '../ui/Button'
-import { useMediaStore } from '../../store/useMediaStore'
+import { useState, useEffect } from 'react';
+import Modal from '../ui/Modal';
+import Input from '../ui/Input';
+import Button from '../ui/Button';
+import { useMediaStore } from '../../store/useMediaStore';
 
 const EMPTY_FORM = {
-  title:       '',
+  title: '',
   description: '',
-  type:        'video',
-  url:         '',
-  thumbnail:   '',
-  duration:    '',
-  genre:       '',
-}
+  type: 'video',
+  url: '',
+  thumbnail: '',
+  duration: '',
+  genre: '',
+};
 
 export default function MediaFormModal({ isOpen, onClose, item = null }) {
-  const { addItem, updateItem } = useMediaStore()
-  const [form, setForm]       = useState(EMPTY_FORM)
-  const [errors, setErrors]   = useState({})
-  const [loading, setLoading] = useState(false)
-  const [apiError, setApiError] = useState('')
+  const { addItem, updateItem } = useMediaStore();
+  const [form, setForm] = useState(EMPTY_FORM);
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
 
-  const isEditing = !!item
+  const isEditing = !!item;
 
   useEffect(() => {
     if (item) {
       setForm({
-        title:       item.title,
+        title: item.title,
         description: item.description,
-        type:        item.type,
-        url:         item.url,
-        thumbnail:   item.thumbnail,
-        duration:    item.duration ?? '',
-        genre:       item.genre,
-      })
+        type: item.type,
+        url: item.url,
+        thumbnail: item.thumbnail,
+        duration: item.duration ?? '',
+        genre: item.genre,
+      });
     } else {
-      setForm(EMPTY_FORM)
+      setForm(EMPTY_FORM);
     }
-    setErrors({})
-    setApiError('')
-  }, [item, isOpen])
+    setErrors({});
+    setApiError('');
+  }, [item, isOpen]);
 
   const validate = () => {
-    const e = {}
-    if (!form.title.trim())     e.title     = 'Title is required.'
-    if (!form.url.trim())       e.url       = 'Media URL is required.'
-    if (!form.thumbnail.trim()) e.thumbnail = 'Thumbnail URL is required.'
-    if (!form.genre.trim())     e.genre     = 'Genre is required.'
-    return e
-  }
+    const e = {};
+    if (!form.title.trim()) e.title = 'Title is required.';
+    if (!form.url.trim()) e.url = 'Media URL is required.';
+    if (!form.thumbnail.trim()) e.thumbnail = 'Thumbnail URL is required.';
+    if (!form.genre.trim()) e.genre = 'Genre is required.';
+    return e;
+  };
 
   const handleSubmit = async () => {
-    const e = validate()
-    if (Object.keys(e).length) { setErrors(e); return }
-
-    setLoading(true)
-    setApiError('')
-    try {
-      const payload = { ...form, duration: form.duration || null }
-      if (isEditing) {
-        await updateItem(item.id, payload)
-      } else {
-        await addItem(payload)
-      }
-      onClose()
-    } catch (err) {
-      setApiError(err.response?.data?.message ?? 'Something went wrong. Try again.')
-    } finally {
-      setLoading(false)
+    const e = validate();
+    if (Object.keys(e).length) {
+      setErrors(e);
+      return;
     }
-  }
+
+    setLoading(true);
+    setApiError('');
+    try {
+      const payload = { ...form, duration: form.duration || null };
+      if (isEditing) {
+        await updateItem(item.id, payload);
+      } else {
+        await addItem(payload);
+      }
+      onClose();
+    } catch (err) {
+      setApiError(err.response?.data?.message ?? 'Something went wrong. Try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const field = (name) => ({
-    id:       name,
-    value:    form[name],
-    error:    errors[name],
+    id: name,
+    value: form[name],
+    error: errors[name],
     onChange: (e) => setForm((f) => ({ ...f, [name]: e.target.value })),
-  })
+  });
 
   return (
     <Modal
@@ -105,12 +108,12 @@ export default function MediaFormModal({ isOpen, onClose, item = null }) {
           </select>
         </div>
 
-        <Input label="Media URL"      placeholder="https://..." {...field('url')} />
-        <Input label="Thumbnail URL"  placeholder="https://..." {...field('thumbnail')} />
+        <Input label="Media URL" placeholder="https://..." {...field('url')} />
+        <Input label="Thumbnail URL" placeholder="https://..." {...field('thumbnail')} />
 
         <div className="grid grid-cols-2 gap-4">
-          <Input label="Duration (optional)" placeholder="1:24:00"   {...field('duration')} />
-          <Input label="Genre"               placeholder="e.g. Sci-Fi" {...field('genre')} />
+          <Input label="Duration (optional)" placeholder="1:24:00" {...field('duration')} />
+          <Input label="Genre" placeholder="e.g. Sci-Fi" {...field('genre')} />
         </div>
 
         <div className="flex flex-col gap-1.5">
@@ -130,8 +133,10 @@ export default function MediaFormModal({ isOpen, onClose, item = null }) {
         </div>
 
         {apiError && (
-          <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20
-                        rounded-md px-3 py-2">
+          <p
+            className="text-xs text-red-400 bg-red-500/10 border border-red-500/20
+                        rounded-md px-3 py-2"
+          >
             {apiError}
           </p>
         )}
@@ -146,5 +151,5 @@ export default function MediaFormModal({ isOpen, onClose, item = null }) {
         </div>
       </div>
     </Modal>
-  )
+  );
 }

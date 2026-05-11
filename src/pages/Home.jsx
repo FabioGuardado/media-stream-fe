@@ -1,18 +1,18 @@
-import { useNavigate } from 'react-router-dom'
-import { useMediaStore } from '../store/useMediaStore'
-import MediaCard from '../components/media/MediaCard'
+import { useNavigate } from 'react-router-dom';
+import { useMediaStore } from '../store/useMediaStore';
+import MediaCard from '../components/media/MediaCard';
 
 export default function Home() {
-  const items        = useMediaStore((s) => s.items)
-  const getStreamUrl = useMediaStore((s) => s.getStreamUrl)
-  const navigate     = useNavigate()
+  const items = useMediaStore((s) => s.items);
+  const getStreamUrl = useMediaStore((s) => s.getStreamUrl);
+  const navigate = useNavigate();
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-10 page-enter">
-      {/* Hero heading */}
       <div className="mb-10">
         <h2 className="font-display text-5xl font-extrabold text-white leading-tight">
-          Explora<br />
+          Explora
+          <br />
           <span className="text-accent">& Reproduce</span>
         </h2>
         <p className="text-muted mt-2 text-base">
@@ -20,7 +20,6 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Empty state */}
       {items.length === 0 ? (
         <div className="text-center py-24 text-muted">
           <p className="text-5xl mb-4">◌</p>
@@ -39,5 +38,5 @@ export default function Home() {
         </div>
       )}
     </main>
-  )
+  );
 }

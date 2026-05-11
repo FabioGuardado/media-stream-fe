@@ -12,5 +12,5 @@ export default function SkeletonCard() {
         </div>
       </div>
     </div>
-  )
+  );
 }

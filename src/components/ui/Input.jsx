@@ -1,10 +1,4 @@
-export default function Input({
-  label,
-  id,
-  error,
-  className = '',
-  ...props
-}) {
+export default function Input({ label, id, error, className = '', ...props }) {
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
@@ -26,5 +20,5 @@ export default function Input({
       />
       {error && <p className="text-xs text-red-400">{error}</p>}
     </div>
-  )
+  );
 }

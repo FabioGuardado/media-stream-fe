@@ -1,57 +1,56 @@
-import { useState, useRef } from 'react'
-import { useMediaStore } from '../../store/useMediaStore'
-import Button from '../../components/ui/Button'
+import { useState, useRef } from 'react';
+import { useMediaStore } from '../../store/useMediaStore';
+import Button from '../../components/ui/Button';
 
-const ACCEPTED = 'video/*,audio/*'
+const ACCEPTED = 'video/*,audio/*';
 
 export default function MediaManager() {
   const { items, uploading, uploadProgress, error, upload, removeItem, getStreamUrl, clearError } =
-    useMediaStore()
+    useMediaStore();
 
-  const [title, setTitle]       = useState('')
-  const [file, setFile]         = useState(null)
-  const [localErr, setLocalErr] = useState('')
-  const fileRef                 = useRef(null)
+  const [title, setTitle] = useState('');
+  const [file, setFile] = useState(null);
+  const [localErr, setLocalErr] = useState('');
+  const fileRef = useRef(null);
 
   const handleFileChange = (e) => {
-    const f = e.target.files?.[0] ?? null
-    setFile(f)
-    if (f && !title) setTitle(f.name.replace(/\.[^.]+$/, ''))
-  }
+    const f = e.target.files?.[0] ?? null;
+    setFile(f);
+    if (f && !title) setTitle(f.name.replace(/\.[^.]+$/, ''));
+  };
 
   const handleUpload = async (e) => {
-    e.preventDefault()
-    if (!file) { setLocalErr('Selecciona un archivo primero.'); return }
-    setLocalErr('')
-    clearError()
+    e.preventDefault();
+    if (!file) {
+      setLocalErr('Selecciona un archivo primero.');
+      return;
+    }
+    setLocalErr('');
+    clearError();
     try {
-      await upload(file, title)
-      setFile(null)
-      setTitle('')
-      if (fileRef.current) fileRef.current.value = ''
+      await upload(file, title);
+      setFile(null);
+      setTitle('');
+      if (fileRef.current) fileRef.current.value = '';
     } catch {
       // error ya está en el store
     }
-  }
+  };
 
   const handleDelete = (id) => {
-    if (!window.confirm('¿Eliminar este elemento de la biblioteca?')) return
-    removeItem(id)
-  }
+    if (!window.confirm('¿Eliminar este elemento de la biblioteca?')) return;
+    removeItem(id);
+  };
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-10 page-enter">
-      {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
-          <h2 className="font-display text-3xl font-extrabold text-white">
-            Gestor de Medios
-          </h2>
+          <h2 className="font-display text-3xl font-extrabold text-white">Gestor de Medios</h2>
         </div>
         <p className="text-muted text-sm">{items.length} elementos en la biblioteca</p>
       </div>
 
-      {/* Upload form */}
       <div className="glass rounded-xl p-6 mb-8">
         <h3 className="font-semibold text-white mb-4">Subir archivo</h3>
         <form onSubmit={handleUpload} className="flex flex-col sm:flex-row gap-3 items-end">
@@ -84,7 +83,6 @@ export default function MediaManager() {
           </Button>
         </form>
 
-        {/* Progress bar */}
         {uploading && (
           <div className="mt-4">
             <div className="flex justify-between text-xs text-muted mb-1">
@@ -100,12 +98,9 @@ export default function MediaManager() {
           </div>
         )}
 
-        {(localErr || error) && (
-          <p className="mt-3 text-red-400 text-sm">{localErr || error}</p>
-        )}
+        {(localErr || error) && <p className="mt-3 text-red-400 text-sm">{localErr || error}</p>}
       </div>
 
-      {/* Library table */}
       <div className="glass rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -155,11 +150,7 @@ export default function MediaManager() {
                         >
                           Reproducir
                         </Button>
-                        <Button
-                          size="sm"
-                          variant="danger"
-                          onClick={() => handleDelete(item.id)}
-                        >
+                        <Button size="sm" variant="danger" onClick={() => handleDelete(item.id)}>
                           Eliminar
                         </Button>
                       </div>
@@ -172,5 +163,5 @@ export default function MediaManager() {
         </div>
       </div>
     </main>
-  )
+  );
 }
