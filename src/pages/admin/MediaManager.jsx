@@ -1,5 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useMediaStore } from '../../store/useMediaStore';
+import { categoryService } from '../../services/categoryService';
 import Button from '../../components/ui/Button';
 
 const ACCEPTED = 'video/*,audio/*';
@@ -11,7 +12,16 @@ export default function MediaManager() {
   const [title, setTitle] = useState('');
   const [file, setFile] = useState(null);
   const [localErr, setLocalErr] = useState('');
+  const [categories, setCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState('');
   const fileRef = useRef(null);
+
+  useEffect(() => {
+    categoryService.getAll().then(({ data }) => {
+      setCategories(data);
+      if (data.length > 0) setCategoryId(data[0].id);
+    });
+  }, []);
 
   const handleFileChange = (e) => {
     const f = e.target.files?.[0] ?? null;
@@ -28,7 +38,7 @@ export default function MediaManager() {
     setLocalErr('');
     clearError();
     try {
-      await upload(file, title);
+      await upload(file, title, categoryId);
       setFile(null);
       setTitle('');
       if (fileRef.current) fileRef.current.value = '';
@@ -77,6 +87,22 @@ export default function MediaManager() {
                          text-white focus:outline-none
                          focus:ring-2 focus:ring-accent/50 focus:border-accent"
             />
+          </div>
+          <div className="flex-1">
+            <label className="block text-xs text-muted mb-1">Categoría</label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className="w-full text-sm bg-panel border border-border rounded-md px-3 py-2
+                         text-white focus:outline-none
+                         focus:ring-2 focus:ring-accent/50 focus:border-accent"
+            >
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
           </div>
           <Button type="submit" variant="amber" isLoading={uploading} className="shrink-0">
             Subir

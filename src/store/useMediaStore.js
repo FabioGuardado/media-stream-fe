@@ -10,13 +10,16 @@ export const useMediaStore = create(
       uploadProgress: 0,
       error: null,
 
-      upload: async (file, title = '') => {
+      upload: async (file, title = '', categoryId) => {
         set({ uploading: true, uploadProgress: 0, error: null });
         try {
-          const { data } = await mediaService.upload(file, (pct) => set({ uploadProgress: pct }));
+          const { data } = await mediaService.upload(file, title.trim() || file.name, categoryId, (pct) =>
+            set({ uploadProgress: pct }),
+          );
 
           const newItem = {
             id: crypto.randomUUID(),
+            dbId: data.id ?? data.Id,
             title: title.trim() || file.name,
             filename: data.archivo ?? data.Archivo,
             type: file.type.startsWith('video/') ? 'video' : 'audio',

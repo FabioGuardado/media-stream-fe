@@ -1,13 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { useMediaStore } from '../store/useMediaStore';
+import { mediaService } from '../services/mediaService';
 import { useThumbnail } from '../hooks/useThumbnail';
+import CategoryTag from '../components/ui/CategoryTag';
 
 function formatDuration(seconds) {
   if (!seconds || isNaN(seconds)) return null;
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
   return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function formatBytes(bytes) {
+  if (!bytes) return null;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function MetaRow({ label, value }) {
@@ -37,6 +46,26 @@ export default function MediaDetail() {
 
   const [duration, setDuration] = useState(null);
   const [resolution, setResolution] = useState(null);
+  const [meta, setMeta] = useState(null);
+
+  useEffect(() => {
+    if (!item.dbId) return;
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    mediaService
+      .getById(item.dbId, signal)
+      .then(({ data }) => {
+        setMeta(data);
+        return mediaService.registerView(item.dbId, signal);
+      })
+      .then(({ data: v }) => {
+        setMeta((prev) => (prev ? { ...prev, views: v.views } : prev));
+      })
+      .catch(() => {});
+
+    return () => controller.abort();
+  }, [item.dbId]);
 
   const handleLoadedMetadata = (e) => {
     const el = e.currentTarget;
@@ -85,18 +114,24 @@ export default function MediaDetail() {
             {item.title}
           </h1>
 
-          <span
-            className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium mb-6
-              ${item.type === 'video' ? 'bg-accent/20 text-accent' : 'bg-purple-500/20 text-purple-400'}`}
-          >
-            {item.type}
-          </span>
+          <div className="flex flex-wrap gap-2 mb-6">
+            <span
+              className={`inline-block text-xs px-2 py-0.5 rounded-full font-medium
+                ${item.type === 'video' ? 'bg-accent/20 text-accent' : 'bg-purple-500/20 text-purple-400'}`}
+            >
+              {item.type}
+            </span>
+            {meta?.category && <CategoryTag name={meta.category.name} />}
+          </div>
 
           <div>
             <MetaRow label="Archivo" value={item.filename} />
             <MetaRow label="Subido" value={new Date(item.createdAt).toLocaleString()} />
             <MetaRow label="Duración" value={duration} />
             <MetaRow label="Resolución" value={resolution} />
+            <MetaRow label="Tamaño" value={formatBytes(meta?.fileSizeBytes)} />
+            <MetaRow label="Vistas" value={meta?.views != null ? String(meta.views) : null} />
+            <MetaRow label="Descripción" value={meta?.description} />
           </div>
         </div>
       </div>
